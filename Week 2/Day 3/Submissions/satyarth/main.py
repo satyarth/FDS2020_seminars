@@ -15,14 +15,16 @@ def benchmark(estimator, param_grid, X, y): # Launches benchmarking given an est
 	X_train, X_test, y_train, y_test = train_test_split(X, y)
 	start_time = time()
 	best_estimator = searcher(xgb, param_grid, X_train, y_train, n_workers=n_workers)
-	runtime = time() - start_time 
+	runtime = time() - start_time
+	best_estimator.fit(X_train, y_train)
 	preds = best_estimator.predict(X_test)
 	mse = mean_squared_error(y_test, preds)
 	return runtime, mse
 
 def write_results(results): # Writes benchmarking results to a CSV file (pandas for this is overkill,
 	df = DataFrame(results) # but I'm lazy
-	df.to_csv("results.csv")
+	df.columns = ['Model', 'Runtime', 'MSE']
+	df.to_csv("results.csv", index=False)
 
 if __name__ == "__main__":
 	print("Loading data...")
